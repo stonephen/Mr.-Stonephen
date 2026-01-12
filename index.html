@@ -1,0 +1,2014 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr. Pan词汇检测系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background-color: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: yellow;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3.8rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f0f7ff;
+            border-bottom: 2px solid #e0f0ff;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 20px;
+            border: 4px;
+            background: 4px;
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .tab-btn.active {
+            background: white;
+            color: #1a2980;
+            border-bottom: 4px solid #1a2980;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 41, 128, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* 点名功能样式 */
+        .call-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .display-area {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 15px 30px rgba(26, 41, 128, 0.3);
+            position: relative;
+            overflow: hidden;
+            height: 280px;
+        }
+        
+        .name-display {
+            font-size: 3.5rem;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            word-break: break-word;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+        
+        .placeholder {
+            font-size: 2.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+        }
+        
+        .message {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            text-align: center;
+            min-height: 30px;
+            margin-top: 10px;
+        }
+        
+        .call-controls {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-call {
+            background: linear-gradient(to right, #FF416C, #FF4B2B);
+            color: white;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+        }
+        
+        /* 词汇抽查功能样式 */
+        .vocab-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .vocab-display-area {
+            flex: 1;
+            min-width: 300px;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            height: 280px;
+        }
+        
+        .en-to-cn-area {
+            background: linear-gradient(135deg, #8A2BE2 0%, #4B0082 100%);
+            box-shadow: 0 15px 30px rgba(138, 43, 226, 0.3);
+        }
+        
+        .cn-to-en-area {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            box-shadow: 0 15px 30px rgba(0, 176, 155, 0.3);
+        }
+        
+        .vocab-display {
+            font-size: 2.8rem;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            margin-bottom: 5px;
+            word-break: break-word;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            max-height: 80px;
+            overflow: hidden;
+        }
+        
+        .answer-display {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 5px;
+            min-height: 45px;
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .vocab-controls {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .unit-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .unit-btn {
+            padding: 18px 8px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .en-to-cn-btn {
+            background: linear-gradient(to right, #FFA500, #FF8C00);
+        }
+        
+        .cn-to-en-btn {
+            background: linear-gradient(to right, #36D1DC, #5B86E5);
+        }
+        
+        .unit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .unit-btn.active {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .en-to-cn-btn.active {
+            background: linear-gradient(to right, #8A2BE2, #4B0082);
+        }
+        
+        .cn-to-en-btn.active {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .vocab-btn-container {
+            margin-bottom: 25px;
+        }
+        
+        .btn-vocab {
+            width: 100%;
+            color: white;
+            font-size: 1.4rem;
+            padding: 22px;
+        }
+        
+        .btn-en-to-cn {
+            background: linear-gradient(to right, #8A2BE2, #4B0082);
+        }
+        
+        .btn-cn-to-en {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+        
+        .btn-show-answer {
+            background: linear-gradient(to right, #FFA500, #FF8C00);
+            color: white;
+            margin-top: 15px;
+        }
+        
+        .history-section {
+            background-color: #f0f9ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .history-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1a2980;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .time-badge {
+            background: #e0f0ff;
+            color: #1a2980;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .unit-badge {
+            background: #8A2BE2;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .cn-to-en-badge {
+            background: #00b09b;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .animation-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 4s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-25px) translateX(15px); }
+        }
+        
+        .flashing {
+            animation: flash 0.7s infinite alternate;
+        }
+        
+        @keyframes flash {
+            from { opacity: 1; }
+            to { opacity: 0.7; }
+        }
+        
+        .instructions {
+            background-color: #e8f4ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 6px solid #1a2980;
+        }
+        
+        .instructions h4 {
+            color: #1a2980;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .answer-hidden {
+            filter: blur(8px);
+            user-select: none;
+        }
+        
+        .mode-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 5px;
+            padding: 8px 10px;
+            border-radius: 15px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.15);
+            height: auto;
+            min-height: 40px;
+        }
+        
+        .mode-text {
+            font-size: 1.2rem;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .progress-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            font-size: 0.9rem;
+            width: 90%;
+            text-align: center;
+            height: 60px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 3px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4ECDC4, #44A08D);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 900px) {
+            .unit-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .tab-btn {
+                padding: 15px;
+                font-size: 1.1rem;
+            }
+            
+            .name-display, .vocab-display {
+                font-size: 2.5rem;
+            }
+            
+            .vocab-display {
+                min-height: 50px;
+                max-height: 70px;
+            }
+            
+            .answer-display {
+                font-size: 1.6rem;
+                min-height: 40px;
+            }
+            
+            .mode-text {
+                font-size: 1rem;
+            }
+            
+            .placeholder {
+                font-size: 1.8rem;
+            }
+            
+            .name-display {
+                font-size: 2.8rem;
+                min-height: 80px;
+            }
+            
+            .unit-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .unit-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .vocab-display {
+                font-size: 2rem;
+                min-height: 40px;
+                max-height: 60px;
+            }
+            
+            .answer-display {
+                font-size: 1.4rem;
+                min-height: 35px;
+            }
+            
+            .name-display {
+                font-size: 2.2rem;
+                min-height: 60px;
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 主工具界面 -->
+    <div class="container" id="main-container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-chalkboard-teacher"></i>
+                Mr. Pan词汇检测系统（九上）
+            </h1>
+            <p>| 随机点名 | 英译汉 | 汉译英 |</p>
+        </div>
+        
+        <!-- 标签页 -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="call">
+                <i class="fas fa-random"></i>
+                随机点名
+            </button>
+            <button class="tab-btn" data-tab="en-to-cn">
+                <i class="fas fa-language"></i>
+                英译汉
+            </button>
+            <button class="tab-btn" data-tab="cn-to-en">
+                <i class="fas fa-exchange-alt"></i>
+                汉译英
+            </button>
+        </div>
+        
+        <!-- 点名功能 -->
+        <div id="call-tab" class="tab-content active">
+            <div class="call-section">
+                <div class="display-area">
+                    <!-- 动画装饰点 -->
+                    <div class="animation-dot" style="top: 15%; left: 10%;"></div>
+                    <div class="animation-dot" style="top: 25%; right: 15%; animation-delay: 0.5s;"></div>
+                    <div class="animation-dot" style="bottom: 20%; left: 15%; animation-delay: 1s;"></div>
+                    <div class="animation-dot" style="bottom: 30%; right: 10%; animation-delay: 1.5s;"></div>
+                    
+                    <div id="call-name-display" class="name-display placeholder">
+                        准备点名
+                    </div>
+                    <div id="call-message" class="message"></div>
+                </div>
+                
+                <div class="call-controls">
+                    <button id="call-btn" class="btn btn-call">
+                        <i class="fas fa-play"></i>
+                        开始随机点名
+                    </button>
+                    <button id="call-reset-btn" class="btn btn-reset">
+                        <i class="fas fa-redo"></i>
+                        重置点名记录
+                    </button>
+                </div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-title">
+                    <i class="fas fa-history"></i>
+                    点名历史记录
+                </div>
+                <div class="history-list" id="call-history">
+                    <!-- 点名历史动态添加 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 英译汉功能 -->
+        <div id="en-to-cn-tab" class="tab-content">
+            <div class="vocab-section">
+                <div class="vocab-display-area en-to-cn-area">
+                    <!-- 动画装饰点 -->
+                    <div class="animation-dot" style="top: 15%; left: 10%; background-color: rgba(255, 255, 255, 0.5);"></div>
+                    <div class="animation-dot" style="top: 25%; right: 15%; animation-delay: 0.5s; background-color: rgba(255, 255, 255, 0.5);"></div>
+                    <div class="animation-dot" style="bottom: 20%; left: 15%; animation-delay: 1s; background-color: rgba(255, 255, 255, 0.5);"></div>
+                    
+                    <div class="mode-indicator">
+                        <span class="mode-text">英译汉</span>
+                    </div>
+                    
+                    <div id="en-display" class="vocab-display">
+                        准备抽查
+                    </div>
+                    <div id="cn-answer-display" class="answer-display answer-hidden">
+                        点击显示答案
+                    </div>
+                    <div id="en-to-cn-message" class="message"></div>
+                    <div id="en-to-cn-progress" class="progress-info">
+                        <div id="en-to-cn-progress-text">请选择一个单元开始抽查</div>
+                        <div class="progress-bar">
+                            <div id="en-to-cn-progress-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vocab-controls">
+                    <div class="vocab-btn-container">
+                        <button id="en-to-cn-btn" class="btn btn-vocab btn-en-to-cn">
+                            <i class="fas fa-dice"></i>
+                            随机抽查一个英译汉词汇
+                        </button>
+                        <button id="show-cn-answer-btn" class="btn btn-show-answer">
+                            <i class="fas fa-eye"></i>
+                            显示答案
+                        </button>
+                        <button id="reset-en-to-cn-btn" class="btn btn-show-answer" style="background: linear-gradient(to right, #FF416C, #FF4B2B); margin-top: 10px;">
+                            <i class="fas fa-redo"></i>
+                            重置当前单元抽查记录
+                        </button>
+                    </div>
+                    
+                    <div class="unit-buttons" id="en-to-cn-unit-buttons">
+                        <!-- 英译汉单元按钮将动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-title">
+                    <i class="fas fa-history"></i>
+                    英译汉抽查记录
+                </div>
+                <div class="history-list" id="en-to-cn-history">
+                    <!-- 英译汉抽查历史动态添加 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 汉译英功能 -->
+        <div id="cn-to-en-tab" class="tab-content">
+            <div class="vocab-section">
+                <div class="vocab-display-area cn-to-en-area">
+                    <!-- 动画装饰点 -->
+                    <div class="animation-dot" style="top: 15%; left: 10%; background-color: rgba(255, 255, 255, 0.5);"></div>
+                    <div class="animation-dot" style="top: 25%; right: 15%; animation-delay: 0.5s; background-color: rgba(255, 255, 255, 0.5);"></div>
+                    <div class="animation-dot" style="bottom: 20%; left: 15%; animation-delay: 1s; background-color: rgba(255, 255, 255, 0.5);"></div>
+                    
+                    <div class="mode-indicator">
+                        <span class="mode-text">汉译英</span>
+                    </div>
+                    
+                    <div id="cn-display" class="vocab-display">
+                        准备抽查
+                    </div>
+                    <div id="en-answer-display" class="answer-display answer-hidden">
+                        点击显示答案
+                    </div>
+                    <div id="cn-to-en-message" class="message"></div>
+                    <div id="cn-to-en-progress" class="progress-info">
+                        <div id="cn-to-en-progress-text">请选择一个单元开始抽查</div>
+                        <div class="progress-bar">
+                            <div id="cn-to-en-progress-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vocab-controls">
+                    <div class="vocab-btn-container">
+                        <button id="cn-to-en-btn" class="btn btn-vocab btn-cn-to-en">
+                            <i class="fas fa-dice"></i>
+                            随机抽查一个汉译英词汇
+                        </button>
+                        <button id="show-en-answer-btn" class="btn btn-show-answer">
+                            <i class="fas fa-eye"></i>
+                            显示答案
+                        </button>
+                        <button id="reset-cn-to-en-btn" class="btn btn-show-answer" style="background: linear-gradient(to right, #FF416C, #FF4B2B); margin-top: 10px;">
+                            <i class="fas fa-redo"></i>
+                            重置当前单元抽查记录
+                        </button>
+                    </div>
+                    
+                    <div class="unit-buttons" id="cn-to-en-unit-buttons">
+                        <!-- 汉译英单元按钮将动态生成 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-title">
+                    <i class="fas fa-history"></i>
+                    汉译英抽查记录
+                </div>
+                <div class="history-list" id="cn-to-en-history">
+                    <!-- 汉译英抽查历史动态添加 -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- 使用说明 -->
+        <div class="instructions">
+            <h4><i class="fas fa-info-circle"></i> 使用说明 </h4>
+            <ul>
+                <li><strong>随机点名功能：</strong>点击"开始随机点名"按钮进行随机选择，已点名的学生会被记录在历史中</li>
+                <li><strong>英译汉功能：</strong>选择单元后，系统会确保每个词汇在全部抽查完前不会重复显示</li>
+                <li><strong>汉译英功能：</strong>选择单元后，系统会确保每个词汇在全部抽查完前不会重复显示</li>
+                <li><strong>去重逻辑：</strong>每个Module的所有词汇都会被抽查一遍后才可能重复</li>
+                <li><strong>进度显示：</strong>左侧显示框显示当前Module的抽查进度（进度条和百分比）</li>
+                <li><strong>重置功能：</strong>可以重置单个单元的抽查记录，重新开始</li>
+                <li><strong>希沃课件使用：</strong>将此页面保存为HTML文件，在希沃课件中插入网页对象即可使用</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 主应用代码 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 数据存储
+            let students = [
+                "陈雅婷","陈钇桥","陈倚淇","高增颖","古梓灏","关炜杰","郭梓灵","何静雯","何银慧","黄宝怡",
+                "黄根浩","黄劲","黄俊富","黄龙华","黄秋灵","黄锡凯","黄梓峰","柯凤仙","寇海睿","黎子萍",
+                "梁万烨","梁雯茵","梁心怡","梁栩","梁予焓","梁远飞","凌智","刘万喜","卢建佟","罗舒婷",
+                "苏炜棋","苏泳森","温龙熙","吴海茵","吴美怡","吴栩辉","谢柳霞","叶莹荧","张焕婷","钟朋达",
+                "钟文龙","朱梓莹","郭佳烨","叶明洋"
+            ];
+            
+            let calledStudents = JSON.parse(localStorage.getItem('calledStudents')) || [];
+            let callHistory = JSON.parse(localStorage.getItem('callHistory')) || [];
+            
+            // 初始化词汇数据
+            let enToCnVocab = {};
+            let cnToEnVocab = {};
+            
+            // 抽查记录（用于去重）
+            let enToCnUsed = JSON.parse(localStorage.getItem('enToCnUsed')) || {};
+            let cnToEnUsed = JSON.parse(localStorage.getItem('cnToEnUsed')) || {};
+            
+            // 从您提供的数据中解析词汇
+            const vocabData = `
+Module 1
+man-made=人造的
+natural=大自然的
+eastern=在东边的
+wonder=奇观，奇迹
+discussion=讨论，商讨
+though=虽然，但是
+in one's opinion=据某人看来
+loud=响亮的
+more than=超过
+electricity=电
+below=在下面
+millions of=大量的，无数的
+shine=照耀
+sign=迹象，标志
+silent=寂静的
+silver=银灰色的，银制的
+sky=天空
+grey=灰色的
+go through=穿过
+beside=在...旁边
+reply=回答，答复
+clear=开始消失
+fall away=突然向下倾斜
+stream=小溪，小河
+nearly=几乎，差不多
+on top of=在...上面
+canyon=峡谷
+remain=逗留，留下
+by=在...旁边，靠近
+
+Module 2
+found=创立，创建
+since then=从那以后
+flag=旗，旗帜
+until=直到...为止
+off=不上课，休息
+all kinds of=各种各样的
+take a vacation=去度假
+season=季节，度假旺季
+kid=小孩
+have fun=玩得高兴，有乐趣
+band=乐队
+as soon as=一...就...
+fourth=第四
+sixth=第六
+seventh=第七
+eighth=第八
+ninth=第九
+tenth=第十
+twelfth=第十二
+twentieth=第二十
+among=在...之中
+speech=演说，讲演
+pioneer=开拓者，先驱者
+grow=种植，栽培
+corn=谷物，玉米
+following=接着的，接下来的
+lay the table=摆放桌子
+over=完了的，结束的
+dish=盘，碟
+parade=游行
+ourselves=我们自己
+
+Module 3
+including=包括，包含
+medal=奖章，奖牌
+attend=上学，出席，参加
+abroad=在国外，到国外
+once again=再一次
+doctor=医生，博士
+degree=课程，学位
+whatever=无论什么，不管什么
+give up=放弃
+amazing=惊人的，极好的
+will=意志，决心
+victor=成功，胜利
+simply=实在，的确
+Canadian=加拿大的，加拿大人的
+sick=生病的
+soldier=军人，士兵
+treat=医治，治疗
+war=战争
+wound=伤，伤口
+die for=为...而死
+wounded=受伤的
+realise=了解，意识到
+dying=垂死的，即将死亡的
+take care of=照顾，护理
+tool=工具，器械
+invention=发明，发明物
+at that time=那时候
+on one's own=独自一人
+useful=有用的，有益的
+rest=休息，睡眠
+himself=他自己
+manage=做成，设法完成
+operation=手术
+continue=（使）继续
+die of=死于...
+Canada=加拿大
+
+Module 4
+platform=月台，站台
+meeting=会议，集会
+miss=未出席，未出现
+shut=关上，合上
+lock=锁，锁住
+simple=简单的，容易的
+
+Module 5
+upstairs=位于楼上的，往楼上
+exhibition=展览，展览会
+against the rules=违反规定
+in trouble=遇上麻烦，处于困境
+tail=尾，尾巴
+rope=粗绳，绳索
+No entry=禁止入内
+no good=不合适的，不方便的
+no wonder=难怪，不足为奇
+missing=失踪的，找不到的
+downstairs=位于楼下的，往楼下
+punish=惩罚，惩处
+communications=通信
+physics=物理学
+chemistry=化学
+dig=挖掘，掘洞
+coal=煤
+energy=能量，能源
+X-ray=X射线，X光
+experiment=实验
+sand=沙，沙子
+control=操作，操纵
+truck=卡车，货车
+wheel=轮子，车轮
+compare...with...=比较...与...
+of all ages=所有年龄段的
+whole=全部的，整个的
+
+Module 6
+deal=协议
+exam=考试
+fail=未能及格，未能达到
+guitar=吉他
+instrument=乐器，仪器
+musical=音乐的
+get into the habit of=养成...的习惯
+schoolwork=学生课业，功课
+volunteer=志愿者
+necessary=必要的，必需的
+shame=可惜，遗憾
+instead of=代替，而不是
+community=社区，社会
+knowledge=知识，学识
+point=观点，看法
+consider=考虑，斟酌
+last word=最终决定，最后一句话
+come round=拜访
+reason=原因，理由
+try out=试用，试
+be angry with sb.=生某人的气
+no longer=不再
+repair=修理，修补
+truth=事实，真相
+at least=至少，起码
+honest=诚实的，老实的
+apologise=认错，道歉
+bill=账单，账款
+pocket money=零花钱
+
+Module 7
+discuss=讨论，谈论
+thinker=思想家
+wise=明智的，有判断力的
+review=评论
+influence=影响，作用于
+make sense=易理解，有意义
+by the way=顺便提一下
+suppose=猜想，认为
+well-known=众所周知的，著名的
+adventure=冒险
+get into trouble=遇上麻烦
+run away=逃走，逃跑
+escape=逃离，逃脱
+cave=洞穴
+dead=死的，去世的
+for a time=一度，一小段时间
+neighbour=邻居
+funeral=葬礼
+surprised=惊奇的，惊讶的
+alive=活着的
+southern=南方的
+state=州，邦
+pay for=为...付出代价
+action=举止，行为，情节
+everyday=日常的，普通的
+dialogue=对话
+
+Module 8
+stand for=是...的缩写，代表
+memory=记忆，回忆
+point=比分
+decision=决定
+excuse=理由，借口
+noon=中午，正午
+seat=座位，座椅
+no way=决不，不可能
+fair=公平的，合理的
+kick=踢
+mad=生气的，恼火的
+sportsman=运动员
+high jump=跳高
+ability=能力
+hurdling=跨栏赛跑
+sportswoman=女运动员
+race=赛跑，比赛
+record=记录，纪录
+method=方法，办法
+hurdles=跨栏赛跑
+Japan=日本
+break=打破，打碎
+sportsperson=运动员
+Asian=亚洲的，亚洲人的
+suffer from=受折磨，因...而受苦
+first place=第一名，冠军
+stop sb. (from) doing sth.=阻止某人做某事
+courage=勇气，胆量
+take pride in=感到自豪
+
+Module 9
+borrow=借入，借来
+put up=张贴，公布
+website=网站
+mail=邮件，信件
+textbook=教科书，课本
+mainly=大部分地，主要地
+thousands of=好几千，成千上万
+page=页，一页
+electronic=电子的
+technology=科技，技术
+powerful=有影响力的，能控制他人的
+memory=存储器，存储量
+full=满的，充满的
+fix=修补，挽救
+instructions=说明书
+lend=借出，借给
+properly=合适地，正确地
+look through=快速阅读，浏览
+printing=印刷
+at a time=每次，一次
+by hand=用手，靠手做
+development=发展，进步
+trade=交易，买卖
+result=产生，发生，结果
+spread=扩展，蔓延，传播
+in a way=在某种程度上，从某一角度
+compare...to=把...比作
+introduction=引进，采用，推行
+amount=量，数量
+store=存储，储藏
+varied=各种各样的，各不相同的
+form=种类，类型，形态
+connection=电话连接，计算机网络连接
+single=仅一个的，单个的
+direction=方向
+replace=替换，取代
+wait and see=等等看，等着瞧
+
+Module 10
+here we go=我们这就看看
+central=中心的，在中间的
+according to=根据，据...所说
+magical=神奇的，迷人的
+height=高度，身高
+sailing boat=帆船
+northeast=在东北的
+sheep=羊，绵羊
+hat=帽子
+keep=使保持，记录
+keep sb./sth. away=(使)避开，(使)不靠近
+fly=苍蝇，飞
+scissors=剪刀
+cut sth. off sth.=把某物从某物上剪掉
+wool=羊毛
+deep a diary=写日记
+hate=憎恨，讨厌
+ant=蚂蚁
+brush sth. off sth.=把某物从某物上刷掉
+at the time=那时，在那段时间
+be surprised at=对...感到惊奇
+period=阶段，时期
+spirit=精灵，精神
+relationship=关系
+relative=亲戚
+ham=火腿
+salad=色拉
+grape=葡萄
+surf=冲浪
+kangaroo=袋鼠
+riding=骑马
+lazy=懒惰的，懒散的
+ride=骑马，乘车
+
+Module 11
+bet=打赌，下赌注
+you bet=的确，当然，一定
+the thing is=答案是，问题是
+general=整体的，普遍的
+standard=标准，水准
+feeling=感觉，直觉看法
+difficulty=困难，困境
+subject=主体
+add=添加
+recently=最近，近来
+menu=菜单
+be in with a chance=有可能，有机会
+tonight=(在)今晚，(在)今夜
+read out=朗读，宣读
+winner=获胜者
+compared with=(与...)相比
+even though=即使，尽管
+rush=冲，奔
+blouse=女衬衫
+skirt=裙子
+protect sth. against sth.=保护...免遭...，使...不受...
+singer=歌手，歌唱家
+congratulations=祝贺
+headmaster=男校长
+present=授予，呈递
+
+Module 12
+factory=制造厂，工厂
+pollute=污染
+recycle=回收利用，再使用
+waste=废料，废弃物
+enemy=敌人，仇人
+crop=庄稼，作物
+kill=杀死，弄死
+oil=石油
+less=较小的，较少的
+hopeless=无望
+china=瓷，瓷器
+divide=分开
+plastic=塑料，塑料的
+policy=政策，方针
+reuse=再次使用，重复利用
+bottle=瓶
+throw away=扔掉，丢弃
+repeat=重说，重新做
+cloth=布，布料
+tons of=许多，很多
+rubber=橡胶
+recycling=回收利用
+rapid=快速的，迅速的
+step=步骤，措施
+grandson=(外)孙子
+granddaughter=(外)孙女
+            `;
+            
+            // 解析词汇数据
+            function parseVocabularyData() {
+                const lines = vocabData.split('\n');
+                let currentModule = '';
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    if (!line) continue;
+                    
+                    if (line.startsWith('Module ')) {
+                        currentModule = line;
+                        enToCnVocab[currentModule] = [];
+                        cnToEnVocab[currentModule] = [];
+                        // 初始化抽查记录
+                        if (!enToCnUsed[currentModule]) enToCnUsed[currentModule] = [];
+                        if (!cnToEnUsed[currentModule]) cnToEnUsed[currentModule] = [];
+                    } else if (line.includes('=')) {
+                        const [english, chinese] = line.split('=');
+                        enToCnVocab[currentModule].push({en: english.trim(), cn: chinese.trim()});
+                        cnToEnVocab[currentModule].push({cn: chinese.trim(), en: english.trim()});
+                    }
+                }
+                
+                // 保存到本地存储
+                localStorage.setItem('enToCnVocab', JSON.stringify(enToCnVocab));
+                localStorage.setItem('cnToEnVocab', JSON.stringify(cnToEnVocab));
+                localStorage.setItem('enToCnUsed', JSON.stringify(enToCnUsed));
+                localStorage.setItem('cnToEnUsed', JSON.stringify(cnToEnUsed));
+            }
+            
+            // 如果本地存储中没有词汇数据，就解析并存储
+            if (!localStorage.getItem('enToCnVocab') || !localStorage.getItem('cnToEnVocab')) {
+                parseVocabularyData();
+            } else {
+                // 从本地存储加载
+                enToCnVocab = JSON.parse(localStorage.getItem('enToCnVocab'));
+                cnToEnVocab = JSON.parse(localStorage.getItem('cnToEnVocab'));
+                enToCnUsed = JSON.parse(localStorage.getItem('enToCnUsed')) || {};
+                cnToEnUsed = JSON.parse(localStorage.getItem('cnToEnUsed')) || {};
+                
+                // 确保所有模块都有抽查记录
+                for (let i = 1; i <= 12; i++) {
+                    const moduleKey = `Module ${i}`;
+                    if (!enToCnUsed[moduleKey]) enToCnUsed[moduleKey] = [];
+                    if (!cnToEnUsed[moduleKey]) cnToEnUsed[moduleKey] = [];
+                }
+            }
+            
+            let enToCnHistory = JSON.parse(localStorage.getItem('enToCnHistory')) || [];
+            let cnToEnHistory = JSON.parse(localStorage.getItem('cnToEnHistory')) || [];
+            
+            // 状态变量
+            let isCalling = false;
+            let callInterval;
+            let currentEnToCnUnit = "Module 1";
+            let currentCnToEnUnit = "Module 1";
+            let currentEnToCnIndex = -1;
+            let currentCnToEnIndex = -1;
+            
+            // DOM元素
+            const callNameDisplay = document.getElementById('call-name-display');
+            const callMessage = document.getElementById('call-message');
+            const callBtn = document.getElementById('call-btn');
+            const callResetBtn = document.getElementById('call-reset-btn');
+            const callHistoryList = document.getElementById('call-history');
+            
+            const enDisplay = document.getElementById('en-display');
+            const cnAnswerDisplay = document.getElementById('cn-answer-display');
+            const enToCnMessage = document.getElementById('en-to-cn-message');
+            const enToCnProgress = document.getElementById('en-to-cn-progress');
+            const enToCnProgressText = document.getElementById('en-to-cn-progress-text');
+            const enToCnProgressFill = document.getElementById('en-to-cn-progress-fill');
+            const enToCnBtn = document.getElementById('en-to-cn-btn');
+            const showCnAnswerBtn = document.getElementById('show-cn-answer-btn');
+            const resetEnToCnBtn = document.getElementById('reset-en-to-cn-btn');
+            const enToCnHistoryList = document.getElementById('en-to-cn-history');
+            const enToCnUnitButtonsContainer = document.getElementById('en-to-cn-unit-buttons');
+            
+            const cnDisplay = document.getElementById('cn-display');
+            const enAnswerDisplay = document.getElementById('en-answer-display');
+            const cnToEnMessage = document.getElementById('cn-to-en-message');
+            const cnToEnProgress = document.getElementById('cn-to-en-progress');
+            const cnToEnProgressText = document.getElementById('cn-to-en-progress-text');
+            const cnToEnProgressFill = document.getElementById('cn-to-en-progress-fill');
+            const cnToEnBtn = document.getElementById('cn-to-en-btn');
+            const showEnAnswerBtn = document.getElementById('show-en-answer-btn');
+            const resetCnToEnBtn = document.getElementById('reset-cn-to-en-btn');
+            const cnToEnHistoryList = document.getElementById('cn-to-en-history');
+            const cnToEnUnitButtonsContainer = document.getElementById('cn-to-en-unit-buttons');
+            
+            // 初始化应用
+            function initApp() {
+                updateCallHistory();
+                initEnToCnUnitButtons();
+                initCnToEnUnitButtons();
+                updateEnToCnHistory();
+                updateCnToEnHistory();
+                
+                // 点名功能事件监听
+                callBtn.addEventListener('click', toggleCall);
+                callResetBtn.addEventListener('click', resetCall);
+                
+                // 英译汉功能事件监听
+                enToCnBtn.addEventListener('click', startEnToCnTest);
+                showCnAnswerBtn.addEventListener('click', showCnAnswer);
+                resetEnToCnBtn.addEventListener('click', resetCurrentEnToCnUnit);
+                
+                // 汉译英功能事件监听
+                cnToEnBtn.addEventListener('click', startCnToEnTest);
+                showEnAnswerBtn.addEventListener('click', showEnAnswer);
+                resetCnToEnBtn.addEventListener('click', resetCurrentCnToEnUnit);
+                
+                // 初始化音频
+                initAudio();
+                
+                // 更新英译汉进度显示
+                updateEnToCnProgress();
+                // 更新汉译英进度显示
+                updateCnToEnProgress();
+            }
+            
+            // 获取未抽查的随机索引（英译汉）
+            function getRandomUnusedIndexEnToCn(moduleKey) {
+                const vocabList = enToCnVocab[moduleKey] || [];
+                const usedIndices = enToCnUsed[moduleKey] || [];
+                
+                // 如果所有词汇都已抽查，重置抽查记录
+                if (usedIndices.length >= vocabList.length) {
+                    return null; // 表示需要重置
+                }
+                
+                // 获取所有未抽查的索引
+                const allIndices = Array.from({length: vocabList.length}, (_, i) => i);
+                const unusedIndices = allIndices.filter(index => !usedIndices.includes(index));
+                
+                // 随机选择一个未抽查的索引
+                const randomIndex = Math.floor(Math.random() * unusedIndices.length);
+                return unusedIndices[randomIndex];
+            }
+            
+            // 获取未抽查的随机索引（汉译英）
+            function getRandomUnusedIndexCnToEn(moduleKey) {
+                const vocabList = cnToEnVocab[moduleKey] || [];
+                const usedIndices = cnToEnUsed[moduleKey] || [];
+                
+                // 如果所有词汇都已抽查，重置抽查记录
+                if (usedIndices.length >= vocabList.length) {
+                    return null; // 表示需要重置
+                }
+                
+                // 获取所有未抽查的索引
+                const allIndices = Array.from({length: vocabList.length}, (_, i) => i);
+                const unusedIndices = allIndices.filter(index => !usedIndices.includes(index));
+                
+                // 随机选择一个未抽查的索引
+                const randomIndex = Math.floor(Math.random() * unusedIndices.length);
+                return unusedIndices[randomIndex];
+            }
+            
+            // 初始化英译汉单元按钮
+            function initEnToCnUnitButtons() {
+                enToCnUnitButtonsContainer.innerHTML = '';
+                
+                for (let i = 1; i <= 12; i++) {
+                    const unitKey = `Module ${i}`;
+                    
+                    // 创建单元按钮
+                    const unitBtn = document.createElement('button');
+                    unitBtn.className = `unit-btn en-to-cn-btn ${unitKey === currentEnToCnUnit ? 'active' : ''}`;
+                    unitBtn.dataset.unit = unitKey;
+                    unitBtn.textContent = unitKey;
+                    
+                    unitBtn.addEventListener('click', function() {
+                        selectEnToCnUnit(unitKey);
+                    });
+                    
+                    enToCnUnitButtonsContainer.appendChild(unitBtn);
+                }
+            }
+            
+            // 初始化汉译英单元按钮
+            function initCnToEnUnitButtons() {
+                cnToEnUnitButtonsContainer.innerHTML = '';
+                
+                for (let i = 1; i <= 12; i++) {
+                    const unitKey = `Module ${i}`;
+                    
+                    // 创建单元按钮
+                    const unitBtn = document.createElement('button');
+                    unitBtn.className = `unit-btn cn-to-en-btn ${unitKey === currentCnToEnUnit ? 'active' : ''}`;
+                    unitBtn.dataset.unit = unitKey;
+                    unitBtn.textContent = unitKey;
+                    
+                    unitBtn.addEventListener('click', function() {
+                        selectCnToEnUnit(unitKey);
+                    });
+                    
+                    cnToEnUnitButtonsContainer.appendChild(unitBtn);
+                }
+            }
+            
+            // 更新英译汉进度显示
+            function updateEnToCnProgress() {
+                const vocabList = enToCnVocab[currentEnToCnUnit] || [];
+                const usedIndices = enToCnUsed[currentEnToCnUnit] || [];
+                const usedCount = usedIndices.length;
+                const totalCount = vocabList.length;
+                
+                if (totalCount > 0) {
+                    const percentage = Math.round((usedCount / totalCount) * 100);
+                    enToCnProgressText.textContent = `${currentEnToCnUnit} - 已抽查: ${usedCount}/${totalCount} (${percentage}%)`;
+                    enToCnProgressFill.style.width = `${percentage}%`;
+                } else {
+                    enToCnProgressText.textContent = `${currentEnToCnUnit} - 暂无词汇数据`;
+                    enToCnProgressFill.style.width = `0%`;
+                }
+            }
+            
+            // 更新汉译英进度显示
+            function updateCnToEnProgress() {
+                const vocabList = cnToEnVocab[currentCnToEnUnit] || [];
+                const usedIndices = cnToEnUsed[currentCnToEnUnit] || [];
+                const usedCount = usedIndices.length;
+                const totalCount = vocabList.length;
+                
+                if (totalCount > 0) {
+                    const percentage = Math.round((usedCount / totalCount) * 100);
+                    cnToEnProgressText.textContent = `${currentCnToEnUnit} - 已抽查: ${usedCount}/${totalCount} (${percentage}%)`;
+                    cnToEnProgressFill.style.width = `${percentage}%`;
+                } else {
+                    cnToEnProgressText.textContent = `${currentCnToEnUnit} - 暂无词汇数据`;
+                    cnToEnProgressFill.style.width = `0%`;
+                }
+            }
+            
+            // 选择英译汉单元
+            function selectEnToCnUnit(unitKey) {
+                currentEnToCnUnit = unitKey;
+                
+                // 更新按钮状态
+                document.querySelectorAll('.en-to-cn-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.unit === unitKey) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // 更新显示
+                enDisplay.textContent = "准备抽查";
+                cnAnswerDisplay.textContent = "点击显示答案";
+                cnAnswerDisplay.className = "answer-display answer-hidden";
+                enToCnMessage.textContent = "";
+                
+                // 重置当前索引
+                currentEnToCnIndex = -1;
+                
+                // 更新进度显示
+                updateEnToCnProgress();
+            }
+            
+            // 选择汉译英单元
+            function selectCnToEnUnit(unitKey) {
+                currentCnToEnUnit = unitKey;
+                
+                // 更新按钮状态
+                document.querySelectorAll('.cn-to-en-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.unit === unitKey) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // 更新显示
+                cnDisplay.textContent = "准备抽查";
+                enAnswerDisplay.textContent = "点击显示答案";
+                enAnswerDisplay.className = "answer-display answer-hidden";
+                cnToEnMessage.textContent = "";
+                
+                // 重置当前索引
+                currentCnToEnIndex = -1;
+                
+                // 更新进度显示
+                updateCnToEnProgress();
+            }
+            
+            // 点名功能
+            function toggleCall() {
+                if (isCalling) {
+                    stopCall();
+                } else {
+                    startCall();
+                }
+            }
+            
+            function startCall() {
+                if (calledStudents.length >= students.length) {
+                    alert('所有学生都已被点名！请重置名单后再试。');
+                    return;
+                }
+                
+                isCalling = true;
+                callBtn.innerHTML = '<i class="fas fa-stop"></i> 停止点名';
+                callBtn.classList.add('flashing');
+                callNameDisplay.classList.remove('placeholder');
+                callNameDisplay.style.color = '#FFD700';
+                callMessage.textContent = '';
+                
+                // 播放滚动音效
+                playRollSound();
+                
+                // 开始滚动效果
+                let rollCount = 0;
+                callInterval = setInterval(() => {
+                    // 获取未点名的学生
+                    const remainingStudents = students.filter(student => !calledStudents.includes(student));
+                    
+                    if (remainingStudents.length === 0) {
+                        stopCall();
+                        return;
+                    }
+                    
+                    // 随机选择一个学生
+                    const randomIndex = Math.floor(Math.random() * remainingStudents.length);
+                    const randomStudent = remainingStudents[randomIndex];
+                    
+                    callNameDisplay.textContent = randomStudent;
+                    
+                    // 每滚动10次改变一次颜色
+                    rollCount++;
+                    if (rollCount % 10 === 0) {
+                        callNameDisplay.style.color = getRandomColor(['#FFD700', '#FF6B6B', '#4ECDC4', '#FF9F43', '#6BCF7F']);
+                    }
+                    
+                }, 80);
+            }
+            
+            function stopCall() {
+                if (!isCalling) return;
+                
+                isCalling = false;
+                clearInterval(callInterval);
+                callBtn.innerHTML = '<i class="fas fa-play"></i> 开始随机点名';
+                callBtn.classList.remove('flashing');
+                
+                // 获取未点名的学生
+                const remainingStudents = students.filter(student => !calledStudents.includes(student));
+                
+                if (remainingStudents.length === 0) {
+                    callNameDisplay.textContent = "所有学生已点名";
+                    callNameDisplay.style.color = 'white';
+                    return;
+                }
+                
+                // 随机选择一个学生
+                const randomIndex = Math.floor(Math.random() * remainingStudents.length);
+                const selectedStudent = remainingStudents[randomIndex];
+                
+                // 添加到已点名列表
+                calledStudents.push(selectedStudent);
+                
+                // 添加到历史记录
+                const now = new Date();
+                const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                callHistory.push(`${selectedStudent} (${timeString})`);
+                
+                // 更新显示
+                callNameDisplay.textContent = selectedStudent;
+                callNameDisplay.style.color = '#FFD700';
+                callMessage.textContent = `恭喜 ${selectedStudent} 被选中！`;
+                
+                // 播放选中音效
+                playSelectSound();
+                
+                // 更新UI
+                updateCallHistory();
+                saveToLocalStorage();
+            }
+            
+            function resetCall() {
+                if (calledStudents.length === 0 && callHistory.length === 0) {
+                    alert('还没有学生被点名！');
+                    return;
+                }
+                
+                if (confirm('确定要重置点名记录吗？这将重新启用所有学生。')) {
+                    calledStudents = [];
+                    callHistory = [];
+                    callNameDisplay.textContent = '准备点名';
+                    callNameDisplay.className = 'name-display placeholder';
+                    callNameDisplay.style.color = 'rgba(255, 255, 255, 0.8)';
+                    callMessage.textContent = '';
+                    updateCallHistory();
+                    saveToLocalStorage();
+                    
+                    // 播放重置音效
+                    playResetSound();
+                }
+            }
+            
+            function updateCallHistory() {
+                callHistoryList.innerHTML = '';
+                
+                // 只显示最近15条记录
+                const recentHistory = callHistory.slice(-15);
+                
+                if (recentHistory.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'history-item';
+                    emptyMsg.innerHTML = `<div style="text-align: center; width: 100%; color: #888; font-style: italic;">暂无点名记录</div>`;
+                    callHistoryList.appendChild(emptyMsg);
+                    return;
+                }
+                
+                recentHistory.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    // 提取学生姓名和时间
+                    const match = item.match(/(.+) \((.+)\)/);
+                    if (match) {
+                        historyItem.innerHTML = `
+                            <span>${match[1]}</span>
+                            <span class="time-badge">${match[2]}</span>
+                        `;
+                    } else {
+                        historyItem.textContent = item;
+                    }
+                    
+                    callHistoryList.appendChild(historyItem);
+                });
+            }
+            
+            // 英译汉抽查功能（去重版本）
+            function startEnToCnTest() {
+                const currentUnitVocab = enToCnVocab[currentEnToCnUnit] || [];
+                
+                if (currentUnitVocab.length === 0) {
+                    alert(`${currentEnToCnUnit} 中没有词汇！`);
+                    return;
+                }
+                
+                // 获取一个未抽查的随机索引
+                const randomIndex = getRandomUnusedIndexEnToCn(currentEnToCnUnit);
+                
+                if (randomIndex === null) {
+                    // 所有词汇都已抽查，询问是否重置
+                    if (confirm(`${currentEnToCnUnit} 的所有词汇都已抽查完毕！是否重置抽查记录重新开始？`)) {
+                        resetCurrentEnToCnUnit();
+                        // 重新获取一个随机索引
+                        const newRandomIndex = getRandomUnusedIndexEnToCn(currentEnToCnUnit);
+                        if (newRandomIndex === null) {
+                            alert('重置后仍然没有词汇可用！');
+                            return;
+                        }
+                        currentEnToCnIndex = newRandomIndex;
+                    } else {
+                        return;
+                    }
+                } else {
+                    currentEnToCnIndex = randomIndex;
+                }
+                
+                const selectedVocab = currentUnitVocab[currentEnToCnIndex];
+                
+                // 记录这个索引已被抽查
+                if (!enToCnUsed[currentEnToCnUnit].includes(currentEnToCnIndex)) {
+                    enToCnUsed[currentEnToCnUnit].push(currentEnToCnIndex);
+                }
+                
+                // 更新显示
+                enDisplay.textContent = selectedVocab.en;
+                enDisplay.style.color = '#FFD700';
+                cnAnswerDisplay.textContent = "???";
+                cnAnswerDisplay.className = "answer-display answer-hidden";
+                enToCnMessage.textContent = `${currentEnToCnUnit} 的词汇`;
+                
+                // 添加到历史记录
+                const now = new Date();
+                const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                enToCnHistory.push(`${selectedVocab.en} → ${selectedVocab.cn} (${currentEnToCnUnit}, ${timeString})`);
+                
+                // 播放选中音效
+                playSelectSound();
+                
+                // 更新UI
+                updateEnToCnHistory();
+                updateEnToCnProgress();
+                saveToLocalStorage();
+            }
+            
+            function showCnAnswer() {
+                const currentUnitVocab = enToCnVocab[currentEnToCnUnit] || [];
+                
+                if (currentEnToCnIndex === -1 || currentUnitVocab.length === 0) {
+                    alert('请先抽查一个词汇！');
+                    return;
+                }
+                
+                const selectedVocab = currentUnitVocab[currentEnToCnIndex];
+                cnAnswerDisplay.textContent = selectedVocab.cn;
+                cnAnswerDisplay.classList.remove('answer-hidden');
+                enToCnMessage.textContent = `答案: ${selectedVocab.cn}`;
+                
+                // 播放显示音效
+                playShowSound();
+            }
+            
+            // 重置当前英译汉单元的抽查记录
+            function resetCurrentEnToCnUnit() {
+                if (confirm(`确定要重置 ${currentEnToCnUnit} 的抽查记录吗？这将清空该单元的所有抽查记录。`)) {
+                    enToCnUsed[currentEnToCnUnit] = [];
+                    currentEnToCnIndex = -1;
+                    enDisplay.textContent = "准备抽查";
+                    cnAnswerDisplay.textContent = "点击显示答案";
+                    cnAnswerDisplay.className = "answer-display answer-hidden";
+                    enToCnMessage.textContent = `${currentEnToCnUnit} 的抽查记录已重置`;
+                    
+                    // 更新进度显示
+                    updateEnToCnProgress();
+                    saveToLocalStorage();
+                    
+                    // 播放重置音效
+                    playResetSound();
+                }
+            }
+            
+            // 汉译英抽查功能（去重版本）
+            function startCnToEnTest() {
+                const currentUnitVocab = cnToEnVocab[currentCnToEnUnit] || [];
+                
+                if (currentUnitVocab.length === 0) {
+                    alert(`${currentCnToEnUnit} 中没有词汇！`);
+                    return;
+                }
+                
+                // 获取一个未抽查的随机索引
+                const randomIndex = getRandomUnusedIndexCnToEn(currentCnToEnUnit);
+                
+                if (randomIndex === null) {
+                    // 所有词汇都已抽查，询问是否重置
+                    if (confirm(`${currentCnToEnUnit} 的所有词汇都已抽查完毕！是否重置抽查记录重新开始？`)) {
+                        resetCurrentCnToEnUnit();
+                        // 重新获取一个随机索引
+                        const newRandomIndex = getRandomUnusedIndexCnToEn(currentCnToEnUnit);
+                        if (newRandomIndex === null) {
+                            alert('重置后仍然没有词汇可用！');
+                            return;
+                        }
+                        currentCnToEnIndex = newRandomIndex;
+                    } else {
+                        return;
+                    }
+                } else {
+                    currentCnToEnIndex = randomIndex;
+                }
+                
+                const selectedVocab = currentUnitVocab[currentCnToEnIndex];
+                
+                // 记录这个索引已被抽查
+                if (!cnToEnUsed[currentCnToEnUnit].includes(currentCnToEnIndex)) {
+                    cnToEnUsed[currentCnToEnUnit].push(currentCnToEnIndex);
+                }
+                
+                // 更新显示
+                cnDisplay.textContent = selectedVocab.cn;
+                cnDisplay.style.color = '#FFD700';
+                enAnswerDisplay.textContent = "???";
+                enAnswerDisplay.className = "answer-display answer-hidden";
+                cnToEnMessage.textContent = `${currentCnToEnUnit} 的词汇`;
+                
+                // 添加到历史记录
+                const now = new Date();
+                const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                cnToEnHistory.push(`${selectedVocab.cn} → ${selectedVocab.en} (${currentCnToEnUnit}, ${timeString})`);
+                
+                // 播放选中音效
+                playSelectSound();
+                
+                // 更新UI
+                updateCnToEnHistory();
+                updateCnToEnProgress();
+                saveToLocalStorage();
+            }
+            
+            function showEnAnswer() {
+                const currentUnitVocab = cnToEnVocab[currentCnToEnUnit] || [];
+                
+                if (currentCnToEnIndex === -1 || currentUnitVocab.length === 0) {
+                    alert('请先抽查一个词汇！');
+                    return;
+                }
+                
+                const selectedVocab = currentUnitVocab[currentCnToEnIndex];
+                enAnswerDisplay.textContent = selectedVocab.en;
+                enAnswerDisplay.classList.remove('answer-hidden');
+                cnToEnMessage.textContent = `答案: ${selectedVocab.en}`;
+                
+                // 播放显示音效
+                playShowSound();
+            }
+            
+            // 重置当前汉译英单元的抽查记录
+            function resetCurrentCnToEnUnit() {
+                if (confirm(`确定要重置 ${currentCnToEnUnit} 的抽查记录吗？这将清空该单元的所有抽查记录。`)) {
+                    cnToEnUsed[currentCnToEnUnit] = [];
+                    currentCnToEnIndex = -1;
+                    cnDisplay.textContent = "准备抽查";
+                    enAnswerDisplay.textContent = "点击显示答案";
+                    enAnswerDisplay.className = "answer-display answer-hidden";
+                    cnToEnMessage.textContent = `${currentCnToEnUnit} 的抽查记录已重置`;
+                    
+                    // 更新进度显示
+                    updateCnToEnProgress();
+                    saveToLocalStorage();
+                    
+                    // 播放重置音效
+                    playResetSound();
+                }
+            }
+            
+            // 工具函数
+            function getRandomColor(colors) {
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            function saveToLocalStorage() {
+                localStorage.setItem('classroomStudents', JSON.stringify(students));
+                localStorage.setItem('calledStudents', JSON.stringify(calledStudents));
+                localStorage.setItem('callHistory', JSON.stringify(callHistory));
+                localStorage.setItem('enToCnVocab', JSON.stringify(enToCnVocab));
+                localStorage.setItem('cnToEnVocab', JSON.stringify(cnToEnVocab));
+                localStorage.setItem('enToCnUsed', JSON.stringify(enToCnUsed));
+                localStorage.setItem('cnToEnUsed', JSON.stringify(cnToEnUsed));
+                localStorage.setItem('enToCnHistory', JSON.stringify(enToCnHistory));
+                localStorage.setItem('cnToEnHistory', JSON.stringify(cnToEnHistory));
+            }
+            
+            // 音频功能
+            let audioContext;
+            
+            function initAudio() {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.log('Web Audio API 不支持或已被禁用');
+                }
+            }
+            
+            function playRollSound() {
+                if (!audioContext) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1);
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                } catch (e) {
+                    console.log('播放音效失败:', e);
+                }
+            }
+            
+            function playSelectSound() {
+                if (!audioContext) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } catch (e) {
+                    console.log('播放音效失败:', e);
+                }
+            }
+            
+            function playResetSound() {
+                if (!audioContext) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.2);
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } catch (e) {
+                    console.log('播放音效失败:', e);
+                }
+            }
+            
+            function playShowSound() {
+                if (!audioContext) return;
+                
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(392, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.1);
+                    
+                    gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    
+                    oscillator.type = 'sine';
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                } catch (e) {
+                    console.log('播放音效失败:', e);
+                }
+            }
+            
+            // 标签页切换
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有active类
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // 激活当前标签
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    // 如果切换到其他标签，确保停止可能正在进行的点名
+                    if (tabId !== 'call' && isCalling) {
+                        stopCall();
+                    }
+                    
+                    // 更新进度显示
+                    if (tabId === 'en-to-cn') {
+                        updateEnToCnProgress();
+                    } else if (tabId === 'cn-to-en') {
+                        updateCnToEnProgress();
+                    }
+                });
+            });
+            
+            function updateEnToCnHistory() {
+                enToCnHistoryList.innerHTML = '';
+                
+                // 只显示最近15条记录
+                const recentHistory = enToCnHistory.slice(-15);
+                
+                if (recentHistory.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'history-item';
+                    emptyMsg.innerHTML = `<div style="text-align: center; width: 100%; color: #888; font-style: italic;">暂无抽查记录</div>`;
+                    enToCnHistoryList.appendChild(emptyMsg);
+                    return;
+                }
+                
+                recentHistory.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    // 提取词汇、单元和时间
+                    const match = item.match(/(.+) → (.+) \((Module \d+), (.+)\)/);
+                    if (match) {
+                        historyItem.innerHTML = `
+                            <span>${match[1]} → ${match[2]}</span>
+                            <span class="unit-badge">${match[3]}</span>
+                            <span class="time-badge">${match[4]}</span>
+                        `;
+                    } else {
+                        historyItem.textContent = item;
+                    }
+                    
+                    enToCnHistoryList.appendChild(historyItem);
+                });
+            }
+            
+            function updateCnToEnHistory() {
+                cnToEnHistoryList.innerHTML = '';
+                
+                // 只显示最近15条记录
+                const recentHistory = cnToEnHistory.slice(-15);
+                
+                if (recentHistory.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'history-item';
+                    emptyMsg.innerHTML = `<div style="text-align: center; width: 100%; color: #888; font-style: italic;">暂无抽查记录</div>`;
+                    cnToEnHistoryList.appendChild(emptyMsg);
+                    return;
+                }
+                
+                recentHistory.forEach(item => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    
+                    // 提取词汇、单元和时间
+                    const match = item.match(/(.+) → (.+) \((Module \d+), (.+)\)/);
+                    if (match) {
+                        historyItem.innerHTML = `
+                            <span>${match[1]} → ${match[2]}</span>
+                            <span class="cn-to-en-badge">${match[3]}</span>
+                            <span class="time-badge">${match[4]}</span>
+                        `;
+                    } else {
+                        historyItem.textContent = item;
+                    }
+                    
+                    cnToEnHistoryList.appendChild(historyItem);
+                });
+            }
+            
+            // 页面加载时初始化
+            initApp();
+        });
+    </script>
+</body>
+</html>
